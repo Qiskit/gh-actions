@@ -3,42 +3,42 @@ name: Docker image deployment process in IBM Cloud Code Engine
 on:
   workflow_call:
     inputs:
-      CONTAINER_REGISTRY_NAMESPACE:
+      container_registry_namespace:
         required: true
         type: string
-      CODE_ENGINE_PROJECT:
+      code_engine_project:
         required: true
         type: string
-      CODE_ENGINE_REGISTRY_SECRET:
+      code_engine_registry_secret:
         required: true
         type: string
-      DOCKER_IMAGE_NAME:
+      docker_image_name:
         required: true
         type: string
-      DOCKER_IMAGE_PORT:
+      docker_image_port:
         required: true
         type: string
-      IBMCLOUD_REGION:
+      ibmcloud_region:
         required: true
         type: string
-      IBMCLOUD_RESOURCE_GROUP:
+      ibmcloud_resource_group:
         required: true
         type: string
-      PR_TAG:
+      pr_tag:
         required: true
         type: string
     secrets:
-      IBMCLOUD_ACCOUNT:
+      ibmcloud_account:
         required: true
-      IBMCLOUD_API_KEY:
+      ibmcloud_api_key:
         required: true
 
 jobs:
   docker-image-preview:
     runs-on: ubuntu-latest
     env:
-      APP_NAME: ${{ inputs.DOCKER_IMAGE_NAME }}-${{ inputs.PR_TAG }}
-      DOCKER_IMAGE_TAG: icr.io/${{ inputs.CONTAINER_REGISTRY_NAMESPACE }}/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.PR_TAG }}
+      APP_NAME: ${{ inputs.docker_image_name }}-${{ inputs.pr_tag }}
+      DOCKER_IMAGE_TAG: icr.io/${{ inputs.container_registry_namespace }}/${{ inputs.docker_image_name }}:${{ inputs.pr_tag }}
     
     steps:
       - name: Fetch content of the PR
@@ -67,13 +67,13 @@ jobs:
       - name: Authenticate with IBM Cloud CLI
         id: ibmcloud_authentication
         run: |
-          ibmcloud login -g "${{ inputs.IBMCLOUD_RESOURCE_GROUP }}" -r "${{ inputs.IBMCLOUD_REGION }}" -c "${{ secrets.IBMCLOUD_ACCOUNT }}" --apikey "${{ secrets.IBMCLOUD_API_KEY }}"
+          ibmcloud login -g "${{ inputs.ibmcloud_resource_group }}" -r "${{ inputs.ibmcloud_region }}" -c "${{ secrets.ibmcloud_account }}" --apikey "${{ secrets.ibmcloud_api_key }}"
       
       - name: Remove previous Docker image (if exists)
         id: clean_docker_image
         run: |
           ibmcloud cr region-set global
-          if ibmcloud cr image-list | grep "${{ inputs.DOCKER_IMAGE_NAME }}" | grep "${{ inputs.PR_TAG }}" ; then
+          if ibmcloud cr image-list | grep "${{ inputs.docker_image_name }}" | grep "${{ inputs.pr_tag }}" ; then
             ibmcloud cr image-rm "${{ env.DOCKER_IMAGE_TAG }}"
           else
             echo "no image to remove"
@@ -85,7 +85,7 @@ jobs:
         with:
           registry: icr.io
           username: iamapikey
-          password: ${{ secrets.IBMCLOUD_API_KEY }}
+          password: ${{ secrets.ibmcloud_api_key }}
 
       - name: Build and push to IBM registry
         id: build_push_to_cr
@@ -99,7 +99,7 @@ jobs:
       - name: Determine Code Engine project and app status
         id: ce_command_choice
         run: |
-          ibmcloud ce project select -n "${{ inputs.CODE_ENGINE_PROJECT }}"
+          ibmcloud ce project select -n "${{ inputs.code_engine_project }}"
           if ibmcloud ce app list -q | grep "${{ env.APP_NAME }}" ; then
             echo "::set-output name=command::update"
           else
@@ -112,8 +112,8 @@ jobs:
           ibmcloud ce app ${{ steps.ce_command_choice.outputs.command }} \
             --name "${{ env.APP_NAME }}" \
             --image "${{ env.DOCKER_IMAGE_TAG }}" \
-            --registry-secret "${{ inputs.CODE_ENGINE_REGISTRY_SECRET }}" \
-            --port "${{ inputs.DOCKER_IMAGE_PORT }}" \
+            --registry-secret "${{ inputs.code_engine_registry_secret }}" \
+            --port "${{ inputs.docker_image_port }}" \
             --cpu 0.25 \
             --memory 0.5G \
             --min 1
