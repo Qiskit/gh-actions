@@ -3,10 +3,10 @@ name: Build and push Docker image to IBM container registry
 on:
   workflow_call:
     inputs:
-      DOCKER_IMAGE_NAME:
+      CONTAINER_REGISTRY_NAMESPACE:
         required: true
         type: string
-      CONTAINER_REGISTRY_NAMESPACE:
+      DOCKER_IMAGE_NAME:
         required: true
         type: string
       IBMCLOUD_REGION:
