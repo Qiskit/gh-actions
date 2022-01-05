@@ -6,6 +6,9 @@ on:
       DOCKER_IMAGE_NAME:
         required: true
         type: string
+      CONTAINER_REGISTRY_NAMESPACE:
+        required: true
+        type: string
       IBMCLOUD_REGION:
         required: true
         type: string
@@ -25,7 +28,7 @@ jobs:
   build-publish-docker-image:
     runs-on: ubuntu-latest
     env:
-      DOCKER_IMAGE_TAG: icr.io/community-digital/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.PR_TAG }}
+      DOCKER_IMAGE_TAG: icr.io/${{ inputs.CONTAINER_REGISTRY_NAMESPACE }}/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.PR_TAG }}
     
     steps:
       - name: Setup IBM Cloud CLI
