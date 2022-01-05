@@ -1,0 +1,65 @@
+name: Build and push Docker image to IBM container registry
+
+on:
+  workflow_call:
+    inputs:
+      DOCKER_IMAGE_NAME:
+        required: true
+        type: string
+      IBMCLOUD_REGION:
+        required: true
+        type: string
+      IBMCLOUD_RESOURCE_GROUP:
+        required: true
+        type: string
+      PR_TAG:
+        required: true
+        type: string
+    secrets:
+      IBMCLOUD_ACCOUNT:
+        required: true
+      IBMCLOUD_API_KEY:
+        required: true
+
+jobs:
+  build-publish-docker-image:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE_TAG: icr.io/community-digital/${{ inputs.DOCKER_IMAGE_NAME }}:${{ inputs.PR_TAG }}
+    
+    steps:
+      - name: Setup IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud --version
+          ibmcloud config --check-version=false
+          ibmcloud plugin install -f code-engine
+          ibmcloud plugin install -f container-registry
+      
+      - name: Authenticate with IBM Cloud CLI
+        run: |
+          ibmcloud login -g "${{ inputs.IBMCLOUD_RESOURCE_GROUP }}" -r "${{ inputs.IBMCLOUD_REGION }}" -c "${{ secrets.IBMCLOUD_ACCOUNT }}" --apikey "${{ secrets.IBMCLOUD_API_KEY }}"
+      
+      - name: Remove previous Docker image (if exists)
+        run: |
+          ibmcloud cr region-set global
+          if ibmcloud cr image-list | grep "${{ inputs.DOCKER_IMAGE_NAME }}" | grep "${{ inputs.PR_TAG }}" ; then
+            ibmcloud cr image-rm "${{ env.DOCKER_IMAGE_TAG }}"
+          else
+            echo "no image to remove"
+          fi
+      
+      - name: Log-in into IBM Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: icr.io
+          username: iamapikey
+          password: ${{ secrets.IBMCLOUD_API_KEY }}
+
+      - name: Build and push to IBM registry
+        uses: docker/build-push-action@v2.6.1
+        with:
+          push: true
+          tags: ${{ env.DOCKER_IMAGE_TAG }}
+          cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_TAG }}
+          cache-to: type=inline
