@@ -25,7 +25,8 @@ on:
         required: true
         type: string
       pr_tag:
-        required: true
+        default: pr-${{ github.event.pull_request.number }}
+        required: false
         type: string
     secrets:
       ibmcloud_account:
