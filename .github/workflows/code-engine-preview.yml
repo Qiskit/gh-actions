@@ -3,6 +3,11 @@ name: Docker image deployment process in IBM Cloud Code Engine
 on:
   workflow_call:
     inputs:
+      #possible values: simple, platypus
+      build:
+        default: simple
+        required: false
+        type: string
       container_registry_namespace:
         required: true
         type: string
@@ -48,7 +53,7 @@ jobs:
 
       - name: GH deployment status (start)
         id: gh_deployment
-        uses: bobheadxi/deployments@v0.4.3
+        uses: bobheadxi/deployments@v0.6.2
         with:
           step: start
           token: ${{ github.token }}
@@ -88,15 +93,26 @@ jobs:
           username: iamapikey
           password: ${{ secrets.ibmcloud_api_key }}
 
-      - name: Build and push to IBM registry
+      - name: Build and push to IBM registry for a simple project
+        if: ${{ inputs.build == 'simple' }}
         id: build_push_to_cr
-        uses: docker/build-push-action@v2.6.1
+        uses: docker/build-push-action@v2
         with:
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_TAG }}
           cache-to: type=inline
       
+      - name: Build and push to IBM registry for platypus
+        if: ${{ inputs.build == 'platypus' }}
+        id: platypus_build_push_to_cr
+        uses: docker/build-push-action@v2.6.1
+        with:
+          push: true
+          tags: ${{ env.DOCKER_IMAGE_TAG }}
+          cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_TAG }}
+          cache-to: type=inline
+
       - name: Determine Code Engine project and app status
         id: ce_command_choice
         run: |
@@ -124,7 +140,7 @@ jobs:
       
       - name: GH deployment status (finish)
         id: gh_deplyment_finish
-        uses: bobheadxi/deployments@v0.4.3
+        uses: bobheadxi/deployments@v0.6.2
         if: always()
         with:
           step: finish
