@@ -52,7 +52,7 @@ jobs:
         with:
           step: start
           token: ${{ github.token }}
-          env: ${{ env.APP_NAME }}
+          env: Preview
           auto_inactive: true
           ref: ${{ github.event.pull_request.head.ref }}
 
