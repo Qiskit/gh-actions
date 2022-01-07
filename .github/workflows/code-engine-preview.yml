@@ -47,7 +47,7 @@ jobs:
 
       - name: GH deployment status (start)
         id: gh_deployment
-        uses: bobheadxi/deployments@v0.4.3
+        uses: bobheadxi/deployments@v0.6.2
         with:
           step: start
           token: ${{ github.token }}
@@ -84,7 +84,7 @@ jobs:
           password: ${{ secrets.ibmcloud_api_key }}
 
       - name: Build and push to IBM registry
-        uses: docker/build-push-action@v2.6.1
+        uses: docker/build-push-action@v2
         with:
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
@@ -117,7 +117,7 @@ jobs:
           )"
       
       - name: GH deployment status (finish)
-        uses: bobheadxi/deployments@v0.4.3
+        uses: bobheadxi/deployments@v0.6.2
         if: always()
         with:
           step: finish
