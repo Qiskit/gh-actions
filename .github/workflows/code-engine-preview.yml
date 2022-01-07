@@ -35,7 +35,7 @@ on:
         required: true
 
 jobs:
-  code-engine-preview:
+  deploy:
     runs-on: ubuntu-latest
     env:
       APP_NAME: ${{ inputs.docker_image_name }}-${{ inputs.pr_tag }}
