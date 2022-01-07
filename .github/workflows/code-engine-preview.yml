@@ -48,7 +48,7 @@ jobs:
 
       - name: GH deployment status (start)
         id: gh_deployment
-        uses: bobheadxi/deployments@v0.4.3
+        uses: bobheadxi/deployments@v0.6.2
         with:
           step: start
           token: ${{ github.token }}
@@ -90,7 +90,7 @@ jobs:
 
       - name: Build and push to IBM registry
         id: build_push_to_cr
-        uses: docker/build-push-action@v2.6.1
+        uses: docker/build-push-action@v2
         with:
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
@@ -124,7 +124,7 @@ jobs:
       
       - name: GH deployment status (finish)
         id: gh_deplyment_finish
-        uses: bobheadxi/deployments@v0.4.3
+        uses: bobheadxi/deployments@v0.6.2
         if: always()
         with:
           step: finish
