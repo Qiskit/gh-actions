@@ -1,6 +1,5 @@
 name: Container Registry and Code Engine clean up
 
-# run when a pull request is closed
 on:
   workflow_call:
     inputs:
