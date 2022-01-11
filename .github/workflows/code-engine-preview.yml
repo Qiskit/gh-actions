@@ -4,25 +4,30 @@ on:
   workflow_call:
     inputs:
       container_registry_namespace:
-        required: true
+        default: community-digital
+        required: false
         type: string
       code_engine_project:
         required: true
         type: string
       code_engine_registry_secret:
-        required: true
+        default: ibm-container-registry
+        required: false
         type: string
       docker_image_name:
-        required: true
+        default: "8080"
+        required: false
         type: string
       docker_image_port:
         required: true
         type: string
       ibmcloud_region:
-        required: true
+        default: us-south
+        required: false
         type: string
       ibmcloud_resource_group:
-        required: true
+        default: Quantum Community
+        required: false
         type: string
       pr_tag:
         default: pr-${{ github.event.pull_request.number }}
@@ -83,7 +88,8 @@ jobs:
           username: iamapikey
           password: ${{ secrets.ibmcloud_api_key }}
 
-      - name: Build and push to IBM registry
+      - name: Build and push to IBM registry for a simple project
+        if: github.repository != 'Qiskit/platypus'
         uses: docker/build-push-action@v2
         with:
           push: true
@@ -91,6 +97,15 @@ jobs:
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_TAG }}
           cache-to: type=inline
       
+      - name: Build and push to IBM registry for platypus
+        if: github.repository == 'Qiskit/platypus'
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ env.DOCKER_IMAGE_TAG }}
+          cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_TAG }}
+          cache-to: type=inline
+
       - name: Determine Code Engine project and app status
         id: ce_command_choice
         run: |
