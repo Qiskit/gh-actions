@@ -99,7 +99,6 @@ jobs:
       
       - name: Build and push to IBM registry for platypus
         if: github.repository == 'Qiskit/platypus'
-        id: platypus_build_push_to_cr
         uses: docker/build-push-action@v2
         with:
           push: true
