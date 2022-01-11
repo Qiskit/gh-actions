@@ -4,25 +4,30 @@ on:
   workflow_call:
     inputs:
       container_registry_namespace:
-        required: true
+        default: community-digital
+        required: false
         type: string
       code_engine_project:
         required: true
         type: string
       code_engine_registry_secret:
-        required: true
+        default: ibm-container-registry
+        required: false
         type: string
       docker_image_name:
-        required: true
+        default: "8080"
+        required: false
         type: string
       docker_image_port:
         required: true
         type: string
       ibmcloud_region:
-        required: true
+        default: us-south
+        required: false
         type: string
       ibmcloud_resource_group:
-        required: true
+        default: Quantum Community
+        required: false
         type: string
       pr_tag:
         default: pr-${{ github.event.pull_request.number }}
