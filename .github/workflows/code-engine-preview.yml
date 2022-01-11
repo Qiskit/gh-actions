@@ -3,11 +3,6 @@ name: Docker image deployment process in IBM Cloud Code Engine
 on:
   workflow_call:
     inputs:
-      #possible values: simple, platypus
-      build:
-        default: simple
-        required: false
-        type: string
       container_registry_namespace:
         required: true
         type: string
@@ -89,7 +84,7 @@ jobs:
           password: ${{ secrets.ibmcloud_api_key }}
 
       - name: Build and push to IBM registry for a simple project
-        if: ${{ inputs.build == 'simple' }}
+        if: github.repository != 'Qiskit/platypus'
         uses: docker/build-push-action@v2
         with:
           push: true
@@ -98,7 +93,7 @@ jobs:
           cache-to: type=inline
       
       - name: Build and push to IBM registry for platypus
-        if: ${{ inputs.build == 'platypus' }}
+        if: github.repository == 'Qiskit/platypus'
         id: platypus_build_push_to_cr
         uses: docker/build-push-action@v2
         with:
