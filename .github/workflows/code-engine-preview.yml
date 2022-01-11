@@ -15,11 +15,11 @@ on:
         required: false
         type: string
       docker_image_name:
-        default: "8080"
-        required: false
+        required: true
         type: string
       docker_image_port:
-        required: true
+        default: "8080"
+        required: false
         type: string
       ibmcloud_region:
         default: us-south
