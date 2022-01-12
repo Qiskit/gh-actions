@@ -17,10 +17,6 @@ on:
         default: Quantum Community
         required: false
         type: string
-      pr_tag:
-        default: pr-${{ github.event.pull_request.number }}
-        required: false
-        type: string
     secrets:
       ibmcloud_account:
         required: true
@@ -31,9 +27,10 @@ jobs:
   cleanup:
     runs-on: ubuntu-latest
     env:
-      APP_NAME: ${{ inputs.docker_image_name }}-${{ inputs.pr_tag }}
-      DOCKER_IMAGE_TAG: icr.io/${{ inputs.container_registry_namespace }}/${{ inputs.docker_image_name }}:${{ inputs.pr_tag }}
-    
+      PR_TAG: pr-${{ github.event.pull_request.number }}
+      APP_NAME: ${{ inputs.docker_image_name }}-${{ env.PR_TAG }}
+      DOCKER_IMAGE_TAG: icr.io/${{ inputs.container_registry_namespace }}/${{ inputs.docker_image_name }}:${{ env.PR_TAG }}
+
     steps:
       - name: GH deployment status (deactivate)
         id: gh_deployment
@@ -41,7 +38,7 @@ jobs:
         with:
           step: deactivate-env
           token: ${{ github.token }}
-          env: preview-${{ inputs.pr_tag }}
+          env: preview-${{ env.PR_TAG }}
 
       - name: Setup IBM Cloud CLI
         run: |
@@ -50,11 +47,11 @@ jobs:
           ibmcloud config --check-version=false
           ibmcloud plugin install -f code-engine
           ibmcloud plugin install -f container-registry
-      
+
       - name: Authenticate with IBM Cloud CLI
         run: |
           ibmcloud login -g "${{ inputs.ibmcloud_resource_group }}" -r "${{ inputs.ibmcloud_region }}" -c "${{ secrets.ibmcloud_account }}" --apikey "${{ secrets.ibmcloud_api_key }}"
-      
+
       - name: Remove Code Engine preview application
         run: |
           ibmcloud ce project select -n "${{ inputs.code_engine_project }}"
