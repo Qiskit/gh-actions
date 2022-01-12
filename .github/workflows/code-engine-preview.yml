@@ -56,7 +56,7 @@ jobs:
         with:
           step: start
           token: ${{ github.token }}
-          env: Preview
+          env: preview-${{ inputs.pr_tag }}
           auto_inactive: true
           ref: ${{ github.event.pull_request.head.ref }}
 
