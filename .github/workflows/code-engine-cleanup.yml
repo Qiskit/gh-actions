@@ -41,7 +41,7 @@ jobs:
         with:
           step: deactivate-env
           token: ${{ github.token }}
-          env: ${{ env.APP_NAME }}
+          env: preview-${{ inputs.pr_tag }}
 
       - name: Setup IBM Cloud CLI
         run: |
