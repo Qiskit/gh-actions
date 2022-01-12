@@ -3,6 +3,10 @@ name: Container Registry and Code Engine clean up
 on:
   workflow_call:
     inputs:
+      container_registry_namespace:
+        default: community-digital
+        required: false
+        type: string
       code_engine_project:
         required: true
         type: string
