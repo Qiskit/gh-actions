@@ -40,10 +40,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PR_TAG: pr-${{ github.event.pull_request.number }}
-      APP_NAME: ${{ inputs.docker_image_name }}-${{ env.PR_TAG }}
-      DOCKER_IMAGE_TAG: icr.io/${{ inputs.container_registry_namespace }}/${{ inputs.docker_image_name }}:${{ env.PR_TAG }}
 
     steps:
+      - name: Create APP_NAME and DOCKER_IMAGE_TAG env variables
+        run: |
+          echo "APP_NAME=${{ inputs.docker_image_name }}-${{ env.PR_TAG }}" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE_TAG=icr.io/${{ inputs.container_registry_namespace }}/${{ inputs.docker_image_name }}:${{ env.PR_TAG }}" >> $GITHUB_ENV
+
       - name: Fetch content of the PR
         uses: actions/checkout@v2
 
