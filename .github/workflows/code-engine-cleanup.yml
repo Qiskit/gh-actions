@@ -1,0 +1,70 @@
+name: Container Registry and Code Engine clean up
+
+on:
+  workflow_call:
+    inputs:
+      code_engine_project:
+        required: true
+        type: string
+      docker_image_name:
+        required: true
+        type: string
+      ibmcloud_region:
+        default: us-south
+        required: false
+        type: string
+      ibmcloud_resource_group:
+        default: Quantum Community
+        required: false
+        type: string
+      pr_tag:
+        default: pr-${{ github.event.pull_request.number }}
+        required: false
+        type: string
+    secrets:
+      ibmcloud_account:
+        required: true
+      ibmcloud_api_key:
+        required: true
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME: ${{ inputs.docker_image_name }}-${{ inputs.pr_tag }}
+      DOCKER_IMAGE_TAG: icr.io/${{ inputs.container_registry_namespace }}/${{ inputs.docker_image_name }}:${{ inputs.pr_tag }}
+    
+    steps:
+      - name: GH deployment status (deactivate)
+        id: gh_deployment
+        uses: bobheadxi/deployments@v0.6.2
+        with:
+          step: deactivate-env
+          token: ${{ github.token }}
+          env: preview-${{ inputs.pr_tag }}
+
+      - name: Setup IBM Cloud CLI
+        run: |
+          curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          ibmcloud --version
+          ibmcloud config --check-version=false
+          ibmcloud plugin install -f code-engine
+          ibmcloud plugin install -f container-registry
+      
+      - name: Authenticate with IBM Cloud CLI
+        run: |
+          ibmcloud login -g "${{ inputs.ibmcloud_resource_group }}" -r "${{ inputs.ibmcloud_region }}" -c "${{ secrets.ibmcloud_account }}" --apikey "${{ secrets.ibmcloud_api_key }}"
+      
+      - name: Remove Code Engine preview application
+        run: |
+          ibmcloud ce project select -n "${{ inputs.code_engine_project }}"
+          ibmcloud ce application delete \
+            --name "${{ env.APP_NAME }}" \
+            --wait \
+            --ignore-not-found \
+            --force
+
+      - name: Remove Docker image
+        run: |
+          ibmcloud cr region-set global
+          ibmcloud cr image-rm "${{ env.DOCKER_IMAGE_TAG }}"
