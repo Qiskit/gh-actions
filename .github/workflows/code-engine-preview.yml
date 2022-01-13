@@ -38,6 +38,12 @@ on:
         required: true
       ibmcloud_api_key:
         required: true
+      ibmid_client_id:
+        required: false
+      ibmid_client_secret:
+        required: false
+      mongodb_uri:
+        required: false
 
 jobs:
   deploy:
@@ -106,9 +112,9 @@ jobs:
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_TAG }}
           cache-to: type=inline
           build-args: |
-            IBMID_CLIENT_ID=${{ secrets.IBMID_CLIENT_ID }}
-            IBMID_CLIENT_SECRET=${{ secrets.IBMID_CLIENT_SECRET }}
-            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            IBMID_CLIENT_ID=${{ secrets.ibmid_client_id }}
+            IBMID_CLIENT_SECRET=${{ secrets.ibmid_client_secret }}
+            MONGODB_URI=${{ secrets.mongodb_uri }}
 
       - name: Determine Code Engine project and app status
         id: ce_command_choice
