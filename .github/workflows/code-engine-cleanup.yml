@@ -28,7 +28,7 @@ on:
         required: true
 
 jobs:
-  cleanup:
+  clean:
     runs-on: ubuntu-latest
     env:
       PR_TAG: pr-${{ github.event.pull_request.number }}
