@@ -58,7 +58,7 @@ jobs:
 
       - name: GH deployment status (start)
         id: gh_deployment
-        uses: bobheadxi/deployments@v0.6.2
+        uses: bobheadxi/deployments@v1
         with:
           step: start
           token: ${{ github.token }}
@@ -142,7 +142,7 @@ jobs:
           )"
 
       - name: GH deployment status (finish)
-        uses: bobheadxi/deployments@v0.6.2
+        uses: bobheadxi/deployments@v1
         if: always()
         with:
           step: finish
