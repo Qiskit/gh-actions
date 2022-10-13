@@ -39,11 +39,11 @@ jobs:
           echo "APP_NAME=${{ inputs.docker_image_name }}-${{ env.PR_TAG }}" >> $GITHUB_ENV
           echo "DOCKER_IMAGE_TAG=icr.io/${{ inputs.container_registry_namespace }}/${{ inputs.docker_image_name }}:${{ env.PR_TAG }}" >> $GITHUB_ENV
 
-      - name: GH deployment status (deactivate)
+      - name: GH deployment status (delete)
         id: gh_deployment
         uses: bobheadxi/deployments@v1
         with:
-          step: deactivate-env
+          step: delete-env
           token: ${{ github.token }}
           env: preview-${{ env.PR_TAG }}
 
