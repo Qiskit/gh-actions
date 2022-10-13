@@ -54,11 +54,11 @@ jobs:
           echo "DOCKER_IMAGE_TAG=icr.io/${{ inputs.container_registry_namespace }}/${{ inputs.docker_image_name }}:${{ env.PR_TAG }}" >> $GITHUB_ENV
 
       - name: Fetch content of the PR
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: GH deployment status (start)
         id: gh_deployment
-        uses: bobheadxi/deployments@v0.6.2
+        uses: bobheadxi/deployments@v1
         with:
           step: start
           token: ${{ github.token }}
@@ -88,7 +88,7 @@ jobs:
           fi
 
       - name: Log-in into IBM Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: icr.io
           username: iamapikey
@@ -96,7 +96,7 @@ jobs:
 
       - name: Build and push to IBM registry for a simple project
         if: github.repository != 'Qiskit/platypus'
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
@@ -105,7 +105,7 @@ jobs:
 
       - name: Build and push to IBM registry for platypus
         if: github.repository == 'Qiskit/platypus'
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
@@ -142,7 +142,7 @@ jobs:
           )"
 
       - name: GH deployment status (finish)
-        uses: bobheadxi/deployments@v0.6.2
+        uses: bobheadxi/deployments@v1
         if: always()
         with:
           step: finish
