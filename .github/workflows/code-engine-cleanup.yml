@@ -25,6 +25,14 @@ on:
         default: ''
         required: false
         type: string
+      preview_env:
+        default: 'Previews'
+        required: false
+        type: string
+      delete_env:
+        default: false
+        required: false
+        type: boolean
     secrets:
       ibmcloud_account:
         required: true
@@ -52,10 +60,11 @@ jobs:
       - name: GH deployment status (delete)
         id: gh_deployment
         uses: bobheadxi/deployments@v1
+        if: "${{ inputs.delete_env == 'true' }}"
         with:
           step: delete-env
           token: ${{ github.token }}
-          env: preview-${{ env.PREVIEW_TAG }}
+          env: ${{ inputs.preview_env }}
 
       - name: Setup IBM Cloud CLI
         run: |

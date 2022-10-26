@@ -33,6 +33,10 @@ on:
         default: ''
         required: false
         type: string
+      preview_env:
+        default: 'Previews'
+        required: false
+        type: string
     secrets:
       ibmcloud_account:
         required: true
@@ -72,7 +76,7 @@ jobs:
         with:
           step: start
           token: ${{ github.token }}
-          env: preview-${{ env.PREVIEW_TAG }}
+          env: ${{ inputs.preview_env }}
           auto_inactive: true
           ref: ${{ github.event.pull_request.head.ref }}
 
