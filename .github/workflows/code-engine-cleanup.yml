@@ -25,7 +25,7 @@ on:
         default: ''
         required: false
         type: string
-      preview_env:
+      env_name:
         default: 'Previews'
         required: false
         type: string
@@ -64,7 +64,7 @@ jobs:
         with:
           step: delete-env
           token: ${{ github.token }}
-          env: ${{ inputs.preview_env }}
+          env: ${{ inputs.env_name }}
 
       - name: Setup IBM Cloud CLI
         run: |
