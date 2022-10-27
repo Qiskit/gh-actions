@@ -46,7 +46,7 @@ jobs:
 
       - name: Set preview tag using env_name
         if: "${{ inputs.env_name != 'Preview' }}"
-        run: echo "PREVIEW_TAG=${{ inputs.env_name }}" >> $GITHUB_ENV
+        run: echo "PREVIEW_TAG=${inputs.env_name,,}" >> $GITHUB_ENV
 
       - name: Create APP_NAME and DOCKER_IMAGE_TAG env variables
         run: |
