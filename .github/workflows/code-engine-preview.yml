@@ -50,13 +50,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set preview tag
-        run: |
-          if "${{ inputs.env_name == 'Preview' }}" ; then
-            echo "PREVIEW_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-          else
-            echo "PREVIEW_TAG=${inputs.env_name,,}" >> GITHUB_ENV
-          fi
+      - name: Set preview tag using PR number
+        if: "${{ inputs.env_name == 'Preview' }}"
+        run: echo "PREVIEW_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+      - name: Set preview tag using input
+        if: "${{ inputs.env_name != 'Preview' }}"
+        run: echo "PREVIEW_TAG=${{ inputs.env_name }}" >> $GITHUB_ENV
 
       - name: Create APP_NAME and DOCKER_IMAGE_TAG env variables
         run: |
