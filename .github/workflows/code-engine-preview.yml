@@ -29,6 +29,10 @@ on:
         default: Quantum Community
         required: false
         type: string
+      env_name:
+        default: 'Preview'
+        required: false
+        type: string
     secrets:
       ibmcloud_account:
         required: true
@@ -44,14 +48,20 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      PR_TAG: pr-${{ github.event.pull_request.number }}
 
     steps:
+      - name: Set preview tag using PR number
+        if: "${{ inputs.env_name == 'Preview' }}"
+        run: echo "PREVIEW_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+      - name: Set preview tag using input
+        if: "${{ inputs.env_name != 'Preview' }}"
+        run: echo "PREVIEW_TAG=${{ inputs.env_name }}" >> $GITHUB_ENV
+
       - name: Create APP_NAME and DOCKER_IMAGE_TAG env variables
         run: |
-          echo "APP_NAME=${{ inputs.docker_image_name }}-${{ env.PR_TAG }}" >> $GITHUB_ENV
-          echo "DOCKER_IMAGE_TAG=icr.io/${{ inputs.container_registry_namespace }}/${{ inputs.docker_image_name }}:${{ env.PR_TAG }}" >> $GITHUB_ENV
+          echo "APP_NAME=${{ inputs.docker_image_name }}-${{ env.PREVIEW_TAG }}" >> $GITHUB_ENV
+          echo "DOCKER_IMAGE_TAG=icr.io/${{ inputs.container_registry_namespace }}/${{ inputs.docker_image_name }}:${{ env.PREVIEW_TAG }}" >> $GITHUB_ENV
 
       - name: Fetch content of the PR
         uses: actions/checkout@v3
@@ -62,7 +72,7 @@ jobs:
         with:
           step: start
           token: ${{ github.token }}
-          env: preview-${{ env.PR_TAG }}
+          env: ${{ inputs.env_name }}
           auto_inactive: true
           ref: ${{ github.event.pull_request.head.ref }}
 
@@ -81,7 +91,7 @@ jobs:
       - name: Remove previous Docker image (if exists)
         run: |
           ibmcloud cr region-set global
-          if ibmcloud cr image-list | grep "${{ inputs.docker_image_name }}" | grep "${{ env.PR_TAG }}" ; then
+          if ibmcloud cr image-list | grep "${{ inputs.docker_image_name }}" | grep "${{ env.PREVIEW_TAG }}" ; then
             ibmcloud cr image-rm "${{ env.DOCKER_IMAGE_TAG }}"
           else
             echo "no image to remove"
