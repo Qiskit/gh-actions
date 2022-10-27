@@ -55,7 +55,7 @@ jobs:
           if "${{ inputs.env_name == 'Preview' }}" ; then
             echo "PREVIEW_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           else
-            echo "PREVIEW_TAG=`node -p "\"${{ inputs.env_name }}\".toLowerCase()"`" >> $GITHUB_ENV
+            echo "PREVIEW_TAG=`node -p "'${{ inputs.env_name }}'.toLowerCase()"`" >> $GITHUB_ENV
           fi
 
       - name: Create APP_NAME and DOCKER_IMAGE_TAG env variables
