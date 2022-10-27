@@ -29,12 +29,8 @@ on:
         default: Quantum Community
         required: false
         type: string
-      preview_tag:
-        default: ''
-        required: false
-        type: string
       env_name:
-        default: 'Previews'
+        default: 'Preview'
         required: false
         type: string
     secrets:
@@ -54,13 +50,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set preview tag using input
-        if: "${{ inputs.preview_tag != '' }}"
-        run: echo "PREVIEW_TAG=${{ inputs.preview_tag }}" >> $GITHUB_ENV
-
       - name: Set preview tag using PR number
-        if: "${{ inputs.preview_tag == '' }}"
+        if: "${{ inputs.env_name == 'Preview' }}"
         run: echo "PREVIEW_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+
+      - name: Set preview tag using input
+        if: "${{ inputs.env_name != 'Preview' }}"
+        run: echo "PREVIEW_TAG=${{ inputs.env_name }}" >> $GITHUB_ENV
 
       - name: Create APP_NAME and DOCKER_IMAGE_TAG env variables
         run: |
