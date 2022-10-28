@@ -73,7 +73,7 @@ jobs:
           step: start
           token: ${{ github.token }}
           env: ${{ inputs.env_name }}
-          auto_inactive: true
+          auto_inactive: false
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Setup IBM Cloud CLI
