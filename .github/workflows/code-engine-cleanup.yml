@@ -67,6 +67,26 @@ jobs:
         run: |
           ibmcloud login -g "${{ inputs.ibmcloud_resource_group }}" -r "${{ inputs.ibmcloud_region }}" -c "${{ secrets.ibmcloud_account }}" --apikey "${{ secrets.ibmcloud_api_key }}"
 
+      - name: Find GH deployment
+        uses: cloudposse/github-action-seek-deployment@main
+        id: find_gh_deployment
+        with:
+          github-token: ${{ github.token }}
+          environment: ${{ inputs.env_name }}
+          ref: ${{ env.PREVIEW_REF }}
+          status: success
+
+      - name: GH deployment status (start)
+        if: ${{ steps.find_gh_deployment.outputs.id != '' }}
+        id: gh_deployment
+        uses: bobheadxi/deployments@v1
+        with:
+          step: start
+          token: ${{ github.token }}
+          env: ${{ inputs.env_name }}
+          ref: ${{ env.PREVIEW_REF }}
+          deployment-id: ${{ steps.find_gh_deployment.outputs.id }}
+
       - name: Remove Code Engine preview application
         run: |
           ibmcloud ce project select -n "${{ inputs.code_engine_project }}"
@@ -81,22 +101,17 @@ jobs:
           ibmcloud cr region-set global
           ibmcloud cr image-rm "${{ env.DOCKER_IMAGE_TAG }}"
 
-      - name: Find GH deployment
-        uses: cloudposse/github-action-seek-deployment@main
-        id: find_gh_deployment
-        with:
-          github-token: ${{ github.token }}
-          environment: ${{ inputs.env_name }}
-          ref: ${{ env.PREVIEW_REF }}
-          status: success
-
-      - name: Make GH deployment inactive
+      - name: GH deployment status (finish)
+        uses: bobheadxi/deployments@v1
         if: ${{ steps.find_gh_deployment.outputs.id != '' }}
-        uses: chrnorm/deployment-status@v2
         with:
-          token: '${{ github.token }}'
-          state: 'inactive'
-          deployment-id: ${{ steps.find_gh_deployment.outputs.id }}
+          step: finish
+          token: ${{ github.token }}
+          env: ${{ inputs.env_name }}
+          status: 'inactive'
+          auto_inactive: true
+          override: false
+          deployment_id: ${{ steps.gh_deployment.outputs.deployment_id }}
 
       - name: GH deployment status (delete environment)
         uses: bobheadxi/deployments@v1
