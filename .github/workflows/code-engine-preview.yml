@@ -167,9 +167,9 @@ jobs:
         with:
           step: finish
           token: ${{ github.token }}
-          env: ${{ steps.gh_deployment.outputs.env }}
+          env: ${{ inputs.env_name }}
           status: ${{ job.status }}
-          auto_inactive: false
+          auto_inactive: true
           override: false
           deployment_id: ${{ steps.gh_deployment.outputs.deployment_id }}
           env_url: ${{ steps.ce_app_creation.outputs.preview_url }}
