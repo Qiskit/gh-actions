@@ -73,7 +73,6 @@ jobs:
           step: start
           token: ${{ github.token }}
           env: ${{ inputs.env_name }}
-          auto_inactive: false
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Setup IBM Cloud CLI
@@ -159,5 +158,6 @@ jobs:
           token: ${{ github.token }}
           env: ${{ steps.gh_deployment.outputs.env }}
           status: ${{ job.status }}
+          auto_inactive: false
           deployment_id: ${{ steps.gh_deployment.outputs.deployment_id }}
           env_url: ${{ steps.ce_app_creation.outputs.preview_url }}
