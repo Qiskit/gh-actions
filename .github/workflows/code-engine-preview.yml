@@ -68,7 +68,7 @@ jobs:
       - name: Fetch content of the PR
         uses: actions/checkout@v3
 
-      - name: Find GH deployment
+      - name: Check for existing GH deployment
         uses: cloudposse/github-action-seek-deployment@master
         id: find_gh_deployment
         with:
@@ -77,14 +77,14 @@ jobs:
           ref: ${{ env.PREVIEW_REF }}
 
       - name: GH deployment status (start)
-        id: gh_deployment
         uses: bobheadxi/deployments@v1
+        id: gh_deployment
         with:
           step: start
           token: ${{ github.token }}
           env: ${{ inputs.env_name }}
           ref: ${{ env.PREVIEW_REF }}
-          deployment-id: ${{ steps.find_gh_deployment.outputs.id }}
+          deployment_id: ${{ steps.find_gh_deployment.outputs.id }}
 
       - name: Setup IBM Cloud CLI
         run: |
@@ -115,8 +115,8 @@ jobs:
           password: ${{ secrets.ibmcloud_api_key }}
 
       - name: Build and push to IBM registry for a simple project
-        if: github.repository != 'Qiskit/platypus'
         uses: docker/build-push-action@v3
+        if: github.repository != 'Qiskit/platypus'
         with:
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
@@ -124,8 +124,8 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push to IBM registry for platypus
-        if: github.repository == 'Qiskit/platypus'
         uses: docker/build-push-action@v3
+        if: github.repository == 'Qiskit/platypus'
         with:
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}

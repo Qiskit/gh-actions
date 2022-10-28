@@ -67,7 +67,7 @@ jobs:
         run: |
           ibmcloud login -g "${{ inputs.ibmcloud_resource_group }}" -r "${{ inputs.ibmcloud_region }}" -c "${{ secrets.ibmcloud_account }}" --apikey "${{ secrets.ibmcloud_api_key }}"
 
-      - name: Find GH deployment
+      - name: Check for existing GH deployment
         uses: cloudposse/github-action-seek-deployment@master
         id: find_gh_deployment
         with:
@@ -77,15 +77,15 @@ jobs:
           status: success
 
       - name: GH deployment status (start)
-        if: ${{ steps.find_gh_deployment.outputs.id != '' }}
-        id: gh_deployment
         uses: bobheadxi/deployments@v1
+        id: gh_deployment
+        if: ${{ steps.find_gh_deployment.outputs.id != '' }}
         with:
           step: start
           token: ${{ github.token }}
           env: ${{ inputs.env_name }}
           ref: ${{ env.PREVIEW_REF }}
-          deployment-id: ${{ steps.find_gh_deployment.outputs.id }}
+          deployment_id : ${{ steps.find_gh_deployment.outputs.id }}
 
       - name: Remove Code Engine preview application
         run: |
