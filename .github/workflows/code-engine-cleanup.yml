@@ -44,8 +44,10 @@ jobs:
         run: |
           if "${{ inputs.env_name == 'Preview' }}" ; then
             echo "PREVIEW_TAG=pr-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+            echo "PREVIEW_REF=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
           else
             echo "PREVIEW_TAG=`node -p "'${{ inputs.env_name }}'.toLowerCase()"`" >> $GITHUB_ENV
+            echo "PREVIEW_REF=refs/heads/main" >> $GITHUB_ENV
           fi
 
       - name: Create APP_NAME and DOCKER_IMAGE_TAG env variables
@@ -79,12 +81,22 @@ jobs:
           ibmcloud cr region-set global
           ibmcloud cr image-rm "${{ env.DOCKER_IMAGE_TAG }}"
 
-      - name: GH deployment status (destroy deployment)
-        uses: bobheadxi/deployments@v1
+      - name: Find GH deployment
+        uses: cloudposse/github-action-seek-deployment@main
+        id: find_gh_deployment
         with:
-          step: deactivate-env
-          token: ${{ github.token }}
-          env: ${{ inputs.env_name }}
+          github-token: ${{ github.token }}
+          environment: ${{ inputs.env_name }}
+          ref: ${{ env.PREVIEW_TAG }}
+          status: success
+
+      - name: Make GH deployment inactive
+        if: ${{ steps.find_gh_deployment.outputs.id != '' }}
+        uses: chrnorm/deployment-status@v2
+        with:
+          token: '${{ github.token }}'
+          state: 'inactive'
+          deployment-id: ${{ steps.find_gh_deployment.outputs.id }}
 
       - name: GH deployment status (delete environment)
         uses: bobheadxi/deployments@v1
