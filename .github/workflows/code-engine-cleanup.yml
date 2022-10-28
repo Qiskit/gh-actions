@@ -68,7 +68,7 @@ jobs:
           ibmcloud login -g "${{ inputs.ibmcloud_resource_group }}" -r "${{ inputs.ibmcloud_region }}" -c "${{ secrets.ibmcloud_account }}" --apikey "${{ secrets.ibmcloud_api_key }}"
 
       - name: Find GH deployment
-        uses: cloudposse/github-action-seek-deployment@main
+        uses: cloudposse/github-action-seek-deployment@master
         id: find_gh_deployment
         with:
           github-token: ${{ github.token }}
