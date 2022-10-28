@@ -18,7 +18,7 @@ on:
         required: true
         type: string
       docker_image_port:
-        default: "8080"
+        default: '8080'
         required: false
         type: string
       ibmcloud_region:
@@ -158,7 +158,6 @@ jobs:
           token: ${{ github.token }}
           env: ${{ steps.gh_deployment.outputs.env }}
           status: ${{ job.status }}
-          auto_inactive: false
           override: false
           deployment_id: ${{ steps.gh_deployment.outputs.deployment_id }}
           env_url: ${{ steps.ce_app_creation.outputs.preview_url }}
