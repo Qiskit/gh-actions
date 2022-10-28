@@ -111,7 +111,7 @@ jobs:
           status: 'inactive'
           auto_inactive: true
           override: false
-          deployment_id: ${{ steps.gh_deployment.outputs.deployment_id }}
+          deployment_id: ${{ steps.find_gh_deployment.outputs.id }}
 
       - name: GH deployment status (delete environment)
         uses: bobheadxi/deployments@v1
