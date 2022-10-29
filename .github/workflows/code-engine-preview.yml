@@ -77,8 +77,8 @@ jobs:
           ref: ${{ env.PREVIEW_REF }}
 
       - name: GH deployment status (start)
-        uses: bobheadxi/deployments@v1
         id: gh_deployment
+        uses: bobheadxi/deployments@v1
         with:
           step: start
           token: ${{ github.token }}
@@ -115,8 +115,8 @@ jobs:
           password: ${{ secrets.ibmcloud_api_key }}
 
       - name: Build and push to IBM registry for a simple project
-        uses: docker/build-push-action@v3
         if: github.repository != 'Qiskit/platypus'
+        uses: docker/build-push-action@v3
         with:
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
@@ -124,8 +124,8 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push to IBM registry for platypus
-        uses: docker/build-push-action@v3
         if: github.repository == 'Qiskit/platypus'
+        uses: docker/build-push-action@v3
         with:
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
