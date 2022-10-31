@@ -74,7 +74,6 @@ jobs:
           github-token: ${{ github.token }}
           environment: ${{ inputs.env_name }}
           ref: ${{ env.PREVIEW_REF }}
-          status: success
 
       - name: GH deployment status (start)
         uses: bobheadxi/deployments@v1
