@@ -47,7 +47,7 @@ jobs:
             echo "PREVIEW_REF=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
           else
             echo "PREVIEW_TAG=`node -p "'${{ inputs.env_name }}'.toLowerCase()"`" >> $GITHUB_ENV
-            echo "PREVIEW_REF=main" >> $GITHUB_ENV
+            echo "PREVIEW_REF=${{ github.ref_name }}" >> $GITHUB_ENV
           fi
 
       - name: Create APP_NAME and DOCKER_IMAGE_TAG env variables
