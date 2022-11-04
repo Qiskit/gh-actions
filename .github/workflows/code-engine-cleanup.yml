@@ -25,10 +25,6 @@ on:
         default: 'Preview'
         required: false
         type: string
-      delete_env:
-        default: false
-        required: false
-        type: boolean
     secrets:
       ibmcloud_account:
         required: true
@@ -78,18 +74,3 @@ jobs:
         run: |
           ibmcloud cr region-set global
           ibmcloud cr image-rm "${{ env.DOCKER_IMAGE_TAG }}"
-
-      - name: GH deployment status (destroy deployment)
-        uses: bobheadxi/deployments@v1
-        with:
-          step: deactivate-env
-          token: ${{ github.token }}
-          env: ${{ inputs.env_name }}
-
-      - name: GH deployment status (delete environment)
-        uses: bobheadxi/deployments@v1
-        if: "${{ inputs.delete_env == 'true' }}"
-        with:
-          step: delete-env
-          token: ${{ github.token }}
-          env: ${{ inputs.env_name }}
