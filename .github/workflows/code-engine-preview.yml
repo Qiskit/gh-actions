@@ -33,6 +33,10 @@ on:
         default: 'Preview'
         required: false
         type: string
+      clone_textbook_repo:
+        default: 'false'
+        required: false
+        type: string
     secrets:
       ibmcloud_account:
         required: true
@@ -67,6 +71,15 @@ jobs:
 
       - name: Fetch content of the PR
         uses: actions/checkout@v3
+
+      - name: Clone Qiskit/textbook submodule for platypus
+        if: inputs.clone_textbook_repo == 'true'
+        run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< "${{ secrets.textbook_repo_clone_key }}"
+          git config --global url."git@github.com:".insteadOf "https://github.com"
+          git submodule update --init --recursive --depth 1
+          git config --global --remove-section url."git@github.com:"
 
       - name: GH deployment status (start)
         id: gh_deployment
@@ -118,6 +131,7 @@ jobs:
         if: github.repository == 'Qiskit/platypus'
         uses: docker/build-push-action@v3
         with:
+          context: .
           push: true
           tags: ${{ env.DOCKER_IMAGE_TAG }}
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_TAG }}
