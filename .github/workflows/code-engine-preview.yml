@@ -50,6 +50,24 @@ on:
         required: false
       textbook_repo_clone_key:
         required: false
+      NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ANALYTICS_CATEGORY:
+        required: false
+      NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_INSTANCE_ID:
+        required: false
+      NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ANALYTICS_KEY:
+        required: false
+      NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ENABLED:
+        required: false
+      NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_PRODUCT_CODE:
+        required: false
+      NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_PRODUCT_CODE_TYPE:
+        required: false
+      NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_PRODUCT_TITLE:
+        required: false
+      NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_SCRIPT_SRC:
+        required: false
+      NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_UT30:
+        required: false
 
 jobs:
   deploy:
@@ -126,6 +144,16 @@ jobs:
           tags: ${{ env.DOCKER_IMAGE_TAG }}
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_TAG }}
           cache-to: type=inline
+          build-args: |
+            NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ANALYTICS_CATEGORY: ${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ANALYTICS_CATEGORY }}
+            NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_INSTANCE_ID: ${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_INSTANCE_ID }}
+            NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ANALYTICS_KEY: ${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ANALYTICS_KEY_STAGING }}
+            NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ENABLED: true
+            NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_PRODUCT_CODE: ${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_PRODUCT_CODE }}
+            NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_PRODUCT_CODE_TYPE: ${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_PRODUCT_CODE_TYPE }}
+            NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_PRODUCT_TITLE: ${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_PRODUCT_TITLE }}
+            NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_SCRIPT_SRC: ${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_SCRIPT_SRC_STAGING }}
+            NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_UT30: ${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_UT30 }}
 
       - name: Build and push to IBM registry for platypus
         if: github.repository == 'Qiskit/platypus'
