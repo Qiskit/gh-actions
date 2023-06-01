@@ -175,9 +175,9 @@ jobs:
         run: |
           ibmcloud ce project select -n "${{ inputs.code_engine_project }}"
           if ibmcloud ce app list -q | grep "${{ env.APP_NAME }}" ; then
-            echo "::set-output name=command::update"
+            echo "command=update" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=command::create"
+            echo "command=create" >> $GITHUB_OUTPUT
           fi
 
       - name: Create a new preview application in Code Engine
@@ -191,9 +191,9 @@ jobs:
             --cpu 0.25 \
             --memory 0.5G \
             --min 1
-          echo "::set-output name=preview_url::$(\
+          echo "preview_url=$(\
             ibmcloud ce app get --name "${{ env.APP_NAME }}" --output url
-          )"
+          )" >> $GITHUB_OUTPUT
 
       - name: GH deployment status (finish)
         uses: bobheadxi/deployments@v1
