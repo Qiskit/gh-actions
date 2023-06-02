@@ -23,6 +23,7 @@ on:
         type: string
       build_args:
         required: false
+        type: string
       ibmcloud_region:
         default: us-south
         required: false
