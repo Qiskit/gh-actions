@@ -21,8 +21,6 @@ on:
         default: '8080'
         required: false
         type: string
-      build_args:
-        required: false
       ibmcloud_region:
         default: us-south
         required: false
@@ -138,18 +136,8 @@ jobs:
           username: iamapikey
           password: ${{ secrets.ibmcloud_api_key }}
 
-      - name: Build and push to IBM registry
-        if: github.repository != 'Qiskit/qiskit.org' && github.repository != 'Qiskit/platypus'
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          tags: ${{ env.DOCKER_IMAGE_TAG }}
-          cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_TAG }}
-          cache-to: type=inline
-          build-args: ${{ inputs.build_args  }}
-
-      - name: Build and push to IBM registry for qiskit.org
-        if: github.repository == 'Qiskit/qiskit.org'
+      - name: Build and push to IBM registry for a simple project
+        if: github.repository != 'Qiskit/platypus'
         uses: docker/build-push-action@v3
         with:
           push: true
