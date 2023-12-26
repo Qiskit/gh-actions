@@ -71,7 +71,7 @@ on:
         required: false
       NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_UT30:
         required: false
-      AIRTABLE_API_KEY:
+      AIRTABLE_ACCESS_TOKEN:
         required: false
 
 jobs:
@@ -162,7 +162,7 @@ jobs:
           cache-from: type=registry,ref=${{ env.DOCKER_IMAGE_TAG }}
           cache-to: type=inline
           build-args: |
-            AIRTABLE_API_KEY=${{ secrets.AIRTABLE_API_KEY }}
+            AIRTABLE_ACCESS_TOKEN=${{ secrets.AIRTABLE_ACCESS_TOKEN }}
             NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ANALYTICS_CATEGORY=${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ANALYTICS_CATEGORY }}
             NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_INSTANCE_ID=${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_INSTANCE_ID }}
             NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ANALYTICS_KEY=${{ secrets.NUXT_PUBLIC_IBM_ANALYTICS_SEGMENT_ANALYTICS_KEY_STAGING }}
